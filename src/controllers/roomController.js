@@ -1,5 +1,5 @@
 // src/controllers/roomController.js
-const { Room, UserRoom, User } = require('../models'); // Lấy models từ index.js
+const { Message, User, Room, UserRoom, sequelize } = require('../models'); // Đảm bảo Message và User được import
 const Joi = require('joi');
 const logger = require('../config/logger');
 const { Op } = require('sequelize'); // Để sử dụng các toán tử của Sequelize
@@ -200,4 +200,54 @@ exports.leaveRoom = async (req, res) => {
         logger.error(`Error user ID ${req.user.id} leaving room ID ${req.params.roomId}:`, error);
         return res.status(500).json({ success: false, message: 'Server error while leaving room.', error: error.message });
     }
+};
+exports.getMessagesForRoom = async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const userId = req.user.id; // Từ middleware protect
+
+    // Phân trang
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 20; // Mặc định 20 tin nhắn mỗi trang
+    const offset = (page - 1) * limit;
+
+    // Kiểm tra phòng có tồn tại không
+    const room = await Room.findByPk(roomId);
+    if (!room) {
+      logger.warn(`Attempt to get messages for non-existent room ID: ${roomId}`);
+      return res.status(404).json({ success: false, message: 'Room not found.' });
+    }
+
+    // Kiểm tra xem user có phải là thành viên của phòng không
+    const isMember = await UserRoom.findOne({ where: { userId, roomId } });
+    if (!isMember && req.user.role !== 'admin') { // Admin có thể xem tất cả
+        logger.warn(`User ${userId} attempted to get messages for room ${roomId} without being a member.`);
+        return res.status(403).json({ success: false, message: 'You are not authorized to view messages in this room.' });
+    }
+
+    const { count, rows: messages } = await Message.findAndCountAll({
+      where: { roomId },
+      include: [{
+        model: User,
+        as: 'sender',
+        attributes: ['id', 'username', 'displayName', 'avatarUrl'],
+      }],
+      order: [['timestamp', 'DESC']], // Lấy tin mới nhất trước cho logic cuộn vô hạn
+                                     // Hoặc 'ASC' nếu muốn hiển thị từ cũ đến mới ngay
+      limit,
+      offset,
+    });
+
+    logger.info(`Workspaceed ${messages.length} messages for room ID: ${roomId}, page: ${page}`);
+    return res.status(200).json({
+      success: true,
+      messages,
+      currentPage: page,
+      totalPages: Math.ceil(count / limit),
+      totalMessages: count,
+    });
+  } catch (error) {
+    logger.error(`Error fetching messages for room ${req.params.roomId}:`, error);
+    return res.status(500).json({ success: false, message: 'Server error.', error: error.message });
+  }
 };

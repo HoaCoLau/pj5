@@ -11,7 +11,7 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: 'mysql',
-    logging: (msg) => logger.debug(msg), // Log các query SQL ở mức debug
+    logging: console.log, // Log các query SQL ở mức debug
     // logging: false, // Tắt logging SQL query nếu không muốn
     dialectOptions: {
       // Các tùy chọn cụ thể cho MySQL

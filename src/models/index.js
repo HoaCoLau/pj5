@@ -13,6 +13,7 @@ db.User = require('./User');
 db.Room = require('./Room');         // Thêm dòng này
 db.Message = require('./Message');   // Thêm dòng này
 db.UserRoom = require('./UserRoom'); // Thêm dòng này
+db.Friendship = require('./Friendship'); // Thêm dòng này
 
 // Định nghĩa Associations (Mối quan hệ)
 
@@ -60,7 +61,24 @@ db.Message.belongsTo(db.Room, {
   as: 'room',
 });
 
+db.User.hasMany(db.Friendship, {
+  foreignKey: 'userOneId',
+  as: 'sentFriendRequests' // Các lời mời đã gửi
+});
+db.Friendship.belongsTo(db.User, {
+  foreignKey: 'userOneId',
+  as: 'requester' // User gửi yêu cầu
+});
 
+// Quan hệ khi User là người nhận lời mời (userTwo)
+db.User.hasMany(db.Friendship, {
+  foreignKey: 'userTwoId',
+  as: 'receivedFriendRequests' // Các lời mời đã nhận
+});
+db.Friendship.belongsTo(db.User, {
+  foreignKey: 'userTwoId',
+  as: 'receiver' // User nhận yêu cầu
+});
 // (Optional) UserRoom explicitly linked if needed for direct queries on UserRoom
 // db.User.hasMany(db.UserRoom, { foreignKey: 'userId' });
 // db.UserRoom.belongsTo(db.User, { foreignKey: 'userId' });

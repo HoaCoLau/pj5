@@ -37,7 +37,7 @@ Room.init({
             key: 'id',
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL', // Hoặc 'CASCADE' nếu muốn xóa phòng khi user tạo bị xóa
+        onDelete: 'CASCADE', // Hoặc 'CASCADE' nếu muốn xóa phòng khi user tạo bị xóa
     },
     // createdAt và updatedAt được Sequelize tự động quản lý
 }, {

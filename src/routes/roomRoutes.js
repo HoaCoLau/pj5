@@ -13,5 +13,6 @@ router.get('/', roomController.getAllRooms);           // GET /api/rooms - Lấy
 router.get('/:roomId', roomController.getRoomById);    // GET /api/rooms/:roomId - Lấy chi tiết phòng
 router.post('/:roomId/join', roomController.joinRoom); // POST /api/rooms/:roomId/join - Tham gia phòng
 router.post('/:roomId/leave', roomController.leaveRoom);// POST /api/rooms/:roomId/leave - Rời phòng
+router.get('/:roomId/messages', roomController.getMessagesForRoom); // GET /api/rooms/:roomId/messages
 
 module.exports = router;
