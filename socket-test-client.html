@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket.IO Test Client</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Socket.IO Test Client</h1>
+    <input type="text" id="tokenInput" placeholder="Enter JWT Token (Bearer prefix optional)" style="width: 400px;">
+    <button onclick="connectSocket()">Connect</button>
+    <button onclick="disconnectSocket()" disabled id="disconnectBtn">Disconnect</button>
+    <button onclick="sendTestEvent()" disabled id="testEventBtn">Send Test Event</button>
+    <div id="messages"></div>
+
+    <script>
+        let socket;
+        const messagesDiv = document.getElementById('messages');
+        const tokenInput = document.getElementById('tokenInput');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const testEventBtn = document.getElementById('testEventBtn');
+
+        function logMessage(message) {
+            const p = document.createElement('p');
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            messagesDiv.appendChild(p);
+            console.log(message);
+        }
+
+        function connectSocket() {
+            let token = tokenInput.value.trim();
+            if (token.toLowerCase().startsWith('bearer ')) {
+                token = token.substring(7);
+            }
+
+            if (!token) {
+                logMessage('Error: JWT Token is required to connect.');
+                return;
+            }
+
+            if (socket && socket.connected) {
+                logMessage('Already connected.');
+                return;
+            }
+
+            logMessage('Attempting to connect with token...');
+            // Kết nối tới server Socket.IO, gửi token trong handshake.auth
+            socket = io('http://localhost:3001', { // Thay port nếu khác
+                auth: {
+                    token: token
+                }
+                // Hoặc: query: { token: token }
+            });
+
+            socket.on('connect', () => {
+                logMessage(`Connected to server! Socket ID: ${socket.id}`);
+                disconnectBtn.disabled = false;
+                testEventBtn.disabled = false;
+            });
+
+            socket.on('connect_error', (err) => {
+                logMessage(`Connection Error: ${err.message}`);
+                if (socket) socket.disconnect();
+                disconnectBtn.disabled = true;
+                testEventBtn.disabled = true;
+            });
+
+            socket.on('disconnect', (reason) => {
+                logMessage(`Disconnected from server. Reason: ${reason}`);
+                disconnectBtn.disabled = true;
+                testEventBtn.disabled = true;
+            });
+
+            // Lắng nghe sự kiện từ server
+            socket.on('connection_success', (data) => {
+                logMessage(`Server: ${data.message} (User ID: ${data.userId})`);
+            });
+
+            socket.on('server_response_test', (data) => {
+                logMessage(`Server Response Test: ${data.message} | Original: ${JSON.stringify(data.originalData)}`);
+            });
+
+            // Các sự kiện khác từ server có thể được lắng nghe ở đây
+        }
+
+        function disconnectSocket() {
+            if (socket && socket.connected) {
+                socket.disconnect();
+            } else {
+                logMessage('Not connected.');
+            }
+        }
+
+        function sendTestEvent() {
+            if (socket && socket.connected) {
+                const dataToSend = { info: 'Hello from client!', timestamp: new Date().toISOString() };
+                logMessage(`Sending 'client_event_test' with data: ${JSON.stringify(dataToSend)}`);
+                socket.emit('client_event_test', dataToSend);
+            } else {
+                logMessage('Not connected. Cannot send event.');
+            }
+        }
+    </script>
+</body>
+</html>
