@@ -43,6 +43,19 @@ const loginSchema = Joi.object({
     })
 });
 
+const roomCreationSchema = Joi.object({
+    name: Joi.string().min(3).max(50).required().messages({
+        'string.base': `"Tên phòng" phải là một chuỗi`,
+        'string.empty': `"Tên phòng" không được để trống`,
+        'string.min': `"Tên phòng" phải có ít nhất {#limit} ký tự`,
+        'string.max': `"Tên phòng" không được vượt quá {#limit} ký tự`,
+        'any.required': `"Tên phòng" là trường bắt buộc`
+    }),
+    description: Joi.string().max(255).allow('').optional().messages({ // Cho phép trống hoặc không có
+        'string.max': `"Mô tả phòng" không được vượt quá {#limit} ký tự`,
+    })
+});
+
 // Middleware factory
 const validate = (schema) => {
     return (req, res, next) => {
@@ -76,4 +89,6 @@ const validate = (schema) => {
 module.exports = {
     validateRegistration: validate(registrationSchema),
     validateLogin: validate(loginSchema),
+    validateRoomCreation: validate(roomCreationSchema)
+
 };

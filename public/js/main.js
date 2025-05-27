@@ -11,20 +11,28 @@ const socket = io({ // Kết nối tới server Socket.IO
 });
 
 socket.on('connect', () => {
-    console.log('Đã kết nối tới server Socket.IO!', socket.id);
-    // Sau khi kết nối, bạn có thể hiển thị phần chat
-    // document.getElementById('chatArea').style.display = token ? 'block' : 'none';
+    console.log(`[Main] Connected to Socket.IO server! Socket ID: ${socket.id}`);
+    // Nếu có logic cần chạy ngay sau khi kết nối global thì làm ở đây
+    // Ví dụ: nếu chatRoom.js dựa vào sự kiện 'connect' này để join phòng
 });
 
 socket.on('connect_error', (err) => {
-    console.error('Lỗi kết nối Socket.IO:', err.message);
+    console.error('[Main] Global Socket connection error:', err.message);
+    // Xử lý lỗi kết nối chung, ví dụ hiển thị thông báo cho người dùng
+    // Nếu lỗi là do token, có thể xóa token và yêu cầu đăng nhập lại
     if (err.message.includes('Token not provided') || err.message.includes('Invalid token') || err.message.includes('Token expired')) {
-        console.log('Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.');
-        // Có thể redirect về trang login:
-        // localStorage.removeItem('chatToken');
-        // window.location.href = '/auth/login';
+        console.warn('[Main] Token authentication failed. Clearing token and redirecting to login.');
+        localStorage.removeItem('chatToken');
+        localStorage.removeItem('chatUser'); // Xóa cả thông tin user
+        // Chỉ redirect nếu không phải đang ở trang login/register để tránh vòng lặp
+        if (!window.location.pathname.startsWith('/auth')) {
+            // window.location.href = '/auth/login';
+            // Có thể hiển thị một modal yêu cầu đăng nhập thay vì redirect ngay
+            alert("Phiên đăng nhập đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại.");
+        }
     }
 });
+
 
 socket.on('disconnect', (reason) => {
     console.log('Đã ngắt kết nối khỏi server Socket.IO:', reason);

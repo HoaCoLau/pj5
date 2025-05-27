@@ -1,0 +1,37 @@
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 m-auto">
+            <div class="card card-body">
+                <h1 class="text-center mb-3"><i class="fas fa-plus-circle"></i> Tạo phòng chat mới</h1>
+
+                <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+                    <div class="alert alert-danger" role="alert">
+                        <ul class="mb-0">
+                            <% errors.forEach(function(error) { %>
+                                <li><%= error.message %></li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                <% } %>
+
+                <form action="/rooms" method="POST">
+                    <div class="form-group mb-3">
+                        <label for="name">Tên phòng</label>
+                        <input type="text" id="name" name="name" class="form-control"
+                            placeholder="Nhập tên phòng (ví dụ: Chuyện trò linh tinh)"
+                            value="<%= typeof formData !== 'undefined' && formData.name ? formData.name : '' %>" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="description">Mô tả (tùy chọn)</label>
+                        <textarea id="description" name="description" class="form-control" rows="3"
+                            placeholder="Mô tả ngắn về phòng chat của bạn"><%= typeof formData !== 'undefined' && formData.description ? formData.description : '' %></textarea>
+                    </div>
+                    <div class="d-grid gap-2">
+                         <button type="submit" class="btn btn-primary">Tạo phòng</button>
+                         <a href="/rooms" class="btn btn-secondary">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

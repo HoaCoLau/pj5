@@ -120,19 +120,24 @@ io.use(async (socket, next) => {
 // Ví dụ:
 const authRoutes = require('./routes/authRoutes');
 const { authenticateToken, setViewLocals } = require('./middlewares/authMiddleware'); // Chỉ import cái cần
-app.use(setViewLocals);
+const roomRoutes = require('./routes/roomRoutes');
 app.use(authenticateToken);
+app.use(setViewLocals);
+
 // const roomRoutes = require('./routes/roomRoutes');
 // const apiRoutes = require('./routes/apiRoutes');
 app.use('/auth', authRoutes);
-// app.use('/rooms', roomRoutes);
+app.use('/rooms', roomRoutes);
 // app.use('/api', apiRoutes);
 
 // Route cơ bản để test
 app.get('/', (req, res) => {
-    // res.send('<h1>Chào mừng đến với Ứng dụng Chat Realtime!</h1>');
-    // Thay vì send text, render một view (sẽ tạo sau)
-    res.render('index', { title: 'Trang Chủ Chat App' }); // Giả sử có views/index.ejs
+    // multiLogger.info(`Rendering / route. currentUser from res.locals: ${res.locals.currentUser ? res.locals.currentUser.username : 'null'}`); // Thêm log này để kiểm tra
+    console.log(`[INFO] Rendering / route. currentUser from res.locals: ${res.locals.currentUser ? res.locals.currentUser.username : 'null'}`);
+    res.render('index', {
+        title: 'Trang Chủ Chat App'
+        // user: res.locals.currentUser // Không cần truyền user nữa vì đã có currentUser trong res.locals
+    });
 });
 
 
