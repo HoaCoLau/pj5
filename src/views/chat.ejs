@@ -1,98 +1,31 @@
 <% layout('layout') %>
-<div class="row">
-  <div class="col-md-3">
-    <h5>Phòng chat</h5>
-    <ul class="list-group" id="room-list">
-      <% rooms.forEach(r => { %>
-        <li class="list-group-item" onclick="joinRoom('<%= r.id %>', '<%= r.name %>')"><%= r.name %></li>
-      <% }) %>
-    </ul>
-    <button class="btn btn-success mt-2" id="create-room-btn">Tạo phòng</button>
-  </div>
-  <div class="col-md-9">
-    <div class="card">
-      <div class="card-header">Chat Room: <span id="room-name"></span></div>
-      <div class="card-body" id="chat-messages" style="height:400px; overflow-y:auto;">
-        <!-- Tin nhắn sẽ hiển thị ở đây -->
-      </div>
-      <div class="card-footer">
-        <form id="chat-form" class="d-flex">
-          <div class="input-group">
-            <input type="text" id="chat-input" class="form-control" placeholder="Nhập tin nhắn...">
-            <button class="btn btn-light" type="button" id="emoji-btn"><i class="fa fa-smile"></i></button>
-            <button class="btn btn-primary" type="submit">Gửi</button>
-          </div>
+<div class="container-fluid">
+  <div class="row vh-100">
+    <div class="col-md-3 border-end bg-light p-0">
+      <div class="p-3 border-bottom">
+        <h5>Phòng chat</h5>
+        <form id="createRoomForm" class="d-flex mb-2">
+          <input class="form-control me-2" name="roomName" placeholder="Tạo phòng mới" required>
+          <button class="btn btn-primary"><i class="fa fa-plus"></i></button>
         </form>
+        <ul id="roomList" class="list-group"></ul>
       </div>
+      <div class="p-3">
+        <h5>Bạn bè</h5>
+        <ul id="friendList" class="list-group"></ul>
+      </div>
+    </div>
+    <div class="col-md-9 d-flex flex-column p-0">
+      <div class="border-bottom p-3 bg-white">
+        <span id="currentRoomName" class="fw-bold"></span>
+        <span id="roomNotice" class="text-muted ms-3"></span>
+      </div>
+      <div id="chatBox" class="flex-grow-1 overflow-auto p-3 bg-light"></div>
+      <form id="chatForm" class="d-flex border-top p-3 bg-white">
+        <input class="form-control me-2" id="chatInput" placeholder="Nhập tin nhắn..." autocomplete="off">
+        <button class="btn btn-success"><i class="fa fa-paper-plane"></i></button>
+      </form>
     </div>
   </div>
 </div>
-<script src="/socket.io/socket.io.js"></script>
 <script src="/js/chat.js"></script>
-<script>
-let rooms =  JSON.stringify(rooms);
-if (rooms.length > 0) {
-  joinRoom(rooms[0].id, rooms[0].name);
-}
-
-document.getElementById('create-room-btn').addEventListener('click', function() {
-  const name = prompt('Nhập tên phòng mới:');
-  if (name) {
-    fetch('/rooms', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + localStorage.getItem('token')
-      },
-      body: JSON.stringify({ name })
-    })
-    .then(res => res.json())
-    .then(room => {
-      // Thêm phòng mới vào danh sách và join luôn
-      rooms.push(room);
-      const li = document.createElement('li');
-      li.className = 'list-group-item';
-      li.innerText = room.name;
-      li.onclick = () => joinRoom(room.id, room.name);
-      document.getElementById('room-list').appendChild(li);
-      joinRoom(room.id, room.name);
-    });
-  }
-});
-
-socket.on('message', (msg) => {
-  const chat = document.getElementById('chat-messages');
-  chat.innerHTML += `
-    <div class="d-flex align-items-center mb-2">
-      <img src="${msg.avatar || '/default-avatar.png'}" class="rounded-circle me-2" width="32" height="32">
-      <b>${msg.from}:</b> ${msg.text}
-      <span class="text-muted small ms-2"><i class="fa fa-clock"></i> ${new Date(msg.timestamp).toLocaleTimeString()}</span>
-    </div>`;
-  chat.scrollTop = chat.scrollHeight;
-});
-</script>
-<script type="module">
-import 'https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js';
-
-const emojiBtn = document.getElementById('emoji-btn');
-const chatInput = document.getElementById('chat-input');
-let picker;
-
-emojiBtn.addEventListener('click', () => {
-  if (!picker) {
-    picker = document.createElement('emoji-picker');
-    picker.style.position = 'absolute';
-    picker.style.bottom = '60px';
-    picker.style.right = '30px';
-    document.body.appendChild(picker);
-    picker.addEventListener('emoji-click', event => {
-      chatInput.value += event.detail.unicode;
-      picker.remove();
-      picker = null;
-    });
-  } else {
-    picker.remove();
-    picker = null;
-  }
-});
-</script>

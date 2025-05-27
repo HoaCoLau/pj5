@@ -1,60 +1,99 @@
-const token = localStorage.getItem('token'); // Lưu token sau khi đăng nhập
-const socket = io({
-  auth: { token }
-});
+const token = localStorage.getItem('token');
+if (!token) window.location = '/';
 
+const socket = io({ auth: { token } });
 let currentRoom = null;
 
-// Join room khi chọn phòng
-function joinRoom(roomId, roomName) {
-  if (currentRoom) socket.emit('leave', currentRoom);
-  currentRoom = roomId;
-  document.getElementById('room-name').innerText = roomName;
-  document.getElementById('chat-messages').innerHTML = '';
-  socket.emit('join', roomId);
+socket.on('connect', () => {
+  loadRooms();
+  loadFriends();
+});
+
+function loadRooms() {
+  fetch('/api/rooms', { headers: { Authorization: 'Bearer ' + token } })
+    .then(res => res.json())
+    .then(rooms => {
+      const list = document.getElementById('roomList');
+      list.innerHTML = '';
+      rooms.forEach(room => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item list-group-item-action';
+        li.innerText = room.name;
+        li.onclick = () => joinRoom(room.id, room.name);
+        list.appendChild(li);
+      });
+    });
 }
 
-// Gửi tin nhắn
-document.getElementById('chat-form').addEventListener('submit', function(e) {
+function joinRoom(roomId, roomName) {
+  currentRoom = roomId;
+  document.getElementById('currentRoomName').innerText = roomName;
+  document.getElementById('chatBox').innerHTML = '';
+  socket.emit('join', roomId);
+  fetch(`/api/rooms/${roomId}/messages`, { headers: { Authorization: 'Bearer ' + token } })
+    .then(res => res.json())
+    .then(messages => {
+      messages.forEach(msg => addMessage(msg.User?.username || 'Ẩn danh', msg.text, msg.createdAt));
+    });
+}
+
+socket.on('history', messages => {
+  messages.forEach(msg => addMessage(msg.userId, msg.text, msg.createdAt));
+});
+
+socket.on('message', data => {
+  addMessage(data.from, data.text, data.timestamp);
+});
+
+socket.on('notification', msg => {
+  document.getElementById('roomNotice').innerText = msg;
+  setTimeout(() => document.getElementById('roomNotice').innerText = '', 3000);
+});
+
+socket.on('blocked', msg => {
+  alert(msg);
+});
+
+document.getElementById('chatForm').onsubmit = e => {
   e.preventDefault();
-  const input = document.getElementById('chat-input');
-  const text = input.value.trim();
-  if (text && currentRoom) {
-    socket.emit('message', { roomId: currentRoom, text });
-    input.value = '';
-  }
-});
+  const text = document.getElementById('chatInput').value;
+  if (!text || !currentRoom) return;
+  socket.emit('message', { roomId: currentRoom, text });
+  document.getElementById('chatInput').value = '';
+};
 
-// Nhận tin nhắn mới
-socket.on('message', (msg) => {
-  const chat = document.getElementById('chat-messages');
-  chat.innerHTML += `<div><b>${msg.from}:</b> ${msg.text} <span class="text-muted small">${new Date(msg.timestamp).toLocaleTimeString()}</span></div>`;
-  chat.scrollTop = chat.scrollHeight;
-});
+function addMessage(user, text, time) {
+  const box = document.getElementById('chatBox');
+  const div = document.createElement('div');
+  div.innerHTML = `<b>${user}</b>: ${text} <span class="text-muted small">${new Date(time).toLocaleTimeString()}</span>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
 
-// Nhận lịch sử chat
-socket.on('history', (messages) => {
-  const chat = document.getElementById('chat-messages');
-  chat.innerHTML = '';
-  messages.forEach(msg => {
-    chat.innerHTML += `<div><b>${msg.User?.username || 'Ẩn danh'}:</b> ${msg.text} <span class="text-muted small">${new Date(msg.timestamp).toLocaleTimeString()}</span></div>`;
+document.getElementById('createRoomForm').onsubmit = e => {
+  e.preventDefault();
+  const name = e.target.roomName.value;
+  fetch('/api/rooms', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+    body: JSON.stringify({ name })
+  }).then(() => {
+    loadRooms();
+    e.target.roomName.value = '';
   });
-  chat.scrollTop = chat.scrollHeight;
-});
+};
 
-// Nhận thông báo join/leave
-socket.on('notice', (data) => {
-  const chat = document.getElementById('chat-messages');
-  chat.innerHTML += `<div class="text-info"><i>${data.text}</i></div>`;
-  chat.scrollTop = chat.scrollHeight;
-});
-
-// Nhận thông báo bị block do spam
-socket.on('blocked', (data) => {
-  alert(data.message);
-});
-
-// Xử lý lỗi kết nối
-socket.on('connect_error', (err) => {
-  alert('Lỗi kết nối: ' + err.message);
-});
+function loadFriends() {
+  fetch('/api/friends', { headers: { Authorization: 'Bearer ' + token } })
+    .then(res => res.json())
+    .then(friends => {
+      const list = document.getElementById('friendList');
+      list.innerHTML = '';
+      friends.forEach(f => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        li.innerText = f.friendId;
+        list.appendChild(li);
+      });
+    });
+}

@@ -1,0 +1,22 @@
+<% layout('layout') %>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-4">
+      <h3 class="mb-3">Đăng nhập</h3>
+      <form id="loginForm">
+        <input class="form-control mb-2" name="username" placeholder="Tên đăng nhập" required>
+        <input class="form-control mb-2" name="password" type="password" placeholder="Mật khẩu" required>
+        <button class="btn btn-primary w-100">Đăng nhập</button>
+      </form>
+      <hr>
+      <h3 class="mb-3">Đăng ký</h3>
+      <form id="registerForm">
+        <input class="form-control mb-2" name="username" placeholder="Tên đăng nhập" required>
+        <input class="form-control mb-2" name="password" type="password" placeholder="Mật khẩu" required>
+        <button class="btn btn-success w-100">Đăng ký</button>
+      </form>
+      <div id="authMsg" class="mt-2 text-danger"></div>
+    </div>
+  </div>
+</div>
+<script src="/js/auth.js"></script>
