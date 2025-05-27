@@ -1,0 +1,39 @@
+<% layout('layout') %>
+<h2>Quản trị hệ thống</h2>
+<h4>Người dùng</h4>
+<table class="table table-bordered">
+  <tr><th>ID</th><th>Tên</th><th>Role</th><th>Xóa</th></tr>
+  <% users.forEach(u => { %>
+    <tr>
+      <td><%= u.id %></td>
+      <td><%= u.username %></td>
+      <td><%= u.role %></td>
+      <td>
+        <form method="POST" action="/admin/user/<%= u.id %>/delete" onsubmit="return confirm('Xóa user này?')">
+          <button class="btn btn-danger btn-sm">Xóa</button>
+        </form>
+      </td>
+    </tr>
+  <% }) %>
+</table>
+<h4>Phòng chat</h4>
+<table class="table table-bordered">
+  <tr><th>ID</th><th>Tên</th><th>Xóa</th></tr>
+  <% rooms.forEach(r => { %>
+    <tr>
+      <td><%= r.id %></td>
+      <td><%= r.name %></td>
+      <td>
+        <form method="POST" action="/admin/room/<%= r.id %>/delete" onsubmit="return confirm('Xóa phòng này?')">
+          <button class="btn btn-danger btn-sm">Xóa</button>
+        </form>
+      </td>
+    </tr>
+  <% }) %>
+</table>
+<h4>Tin nhắn gần đây</h4>
+<ul>
+  <% messages.forEach(m => { %>
+    <li><b><%= m.userId %></b>: <%= m.text %></li>
+  <% }) %>
+</ul>

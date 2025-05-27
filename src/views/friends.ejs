@@ -1,0 +1,7 @@
+<% layout('layout') %>
+<h2>Danh sách bạn bè</h2>
+<ul>
+  <% friends.forEach(f => { %>
+    <li>Bạn ID: <%= f.friendId %></li>
+  <% }) %>
+</ul>
