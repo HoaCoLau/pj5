@@ -1,0 +1,37 @@
+<div class="row mt-5">
+    <div class="col-md-6 m-auto">
+        <div class="card card-body">
+            <h1 class="text-center mb-3"><i class="fas fa-sign-in-alt"></i> Đăng nhập</h1>
+            <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+                <div class="alert alert-danger" role="alert">
+                    <ul class="mb-0">
+                        <% errors.forEach(function(error) { %>
+                            <li><%= error.message %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+            <% } %>
+             <% if (typeof success_msg !== 'undefined' && success_msg) { %> <div class="alert alert-success" role="alert">
+                    <%= success_msg %>
+                </div>
+            <% } %>
+
+            <form id="loginForm" action="/auth/login" method="POST">
+                <div class="form-group mb-3">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Nhập Email"
+                        value="<%= typeof formData !== 'undefined' && formData.email ? formData.email : '' %>" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" id="password" name="password" class="form-control"
+                        placeholder="Nhập Mật khẩu" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block w-100">Đăng nhập</button>
+            </form>
+            <p class="lead mt-4">
+                Chưa có tài khoản? <a href="/auth/register">Đăng ký</a>
+            </p>
+        </div>
+    </div>
+</div>
