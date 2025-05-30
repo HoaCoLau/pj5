@@ -1,31 +1,26 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 id="roomNameHeader"><i class="fas fa-comment-dots"></i> Phòng: <%= room.name %>
-        </h1>
+        <h1 id="roomNameHeader"><i class="fas fa-comment-dots"></i> Phòng: <%= room.name %></h1>
         <a href="/rooms" class="btn btn-outline-secondary btn-sm">Quay lại danh sách phòng</a>
     </div>
-    <p class="text-muted">Mô tả: <%= room.description || 'Không có mô tả' %>
-    </p>
+    <p class="text-muted">Mô tả: <%= room.description || 'Không có mô tả' %></p>
     <p class="text-muted"><small>Người tạo: <%= room.creator ? room.creator.username : 'Không rõ' %></small></p>
     <hr>
 
-    <div id="messageContainer"
-        style="height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 15px; background-color: #f9f9f9;">
+    <div id="messageContainer" style="height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 15px; background-color: #f9f9f9;">
         <div class="text-center text-muted">Đang tải tin nhắn...</div>
     </div>
 
     <div class="input-group mb-3">
         <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn của bạn...">
-        <button class="btn btn-primary" type="button" id="sendMessageBtn">Gửi <i
-                class="fas fa-paper-plane"></i></button>
+        <button class="btn btn-primary" type="button" id="sendMessageBtn">Gửi <i class="fas fa-paper-plane"></i></button>
     </div>
 
-</div>
+    </div>
 
 <script>
     const currentRoomId = "<%= room.id %>";
     const currentRoomName = "<%= room.name %>";
-    const currentUser = JSON.stringify(currentUser || null);
+    const currentUser =  JSON.stringify(res.locals.currentUser || null); // Đảm bảo currentUser được truyền đúng
 </script>
-<script src="/js/main.js"></script>
 <script src="/js/chatRoom.js"></script>
