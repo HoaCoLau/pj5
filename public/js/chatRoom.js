@@ -1,8 +1,3 @@
-// public/js/chatRoom.js
-// Biến currentRoomId, currentRoomName, currentUser đã được truyền từ EJS template
-// const currentRoomId = ...;
-// const currentRoomName = ...;
-// const currentUser = ...;
 
 const messageContainer = document.getElementById('messageContainer');
 const messageInput = document.getElementById('messageInput');

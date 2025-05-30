@@ -2,7 +2,7 @@
 console.log("main.js loaded");
 
 // Lấy token từ localStorage (sau này khi login thành công sẽ lưu token vào đây)
-const token = localStorage.getItem('chatToken');
+const token = localStorage.getItem('chatToken'); // Giữ nguyên - Khai báo token một lần
 
 const socket = io({ // Kết nối tới server Socket.IO
     auth: { // Gửi token qua 'auth' object
@@ -12,133 +12,107 @@ const socket = io({ // Kết nối tới server Socket.IO
 
 socket.on('connect', () => {
     console.log(`[Main] Connected to Socket.IO server! Socket ID: ${socket.id}`);
-    // Nếu có logic cần chạy ngay sau khi kết nối global thì làm ở đây
-    // Ví dụ: nếu chatRoom.js dựa vào sự kiện 'connect' này để join phòng
 });
 
 socket.on('connect_error', (err) => {
     console.error('[Main] Global Socket connection error:', err.message);
-    // Xử lý lỗi kết nối chung, ví dụ hiển thị thông báo cho người dùng
-    // Nếu lỗi là do token, có thể xóa token và yêu cầu đăng nhập lại
     if (err.message.includes('Token not provided') || err.message.includes('Invalid token') || err.message.includes('Token expired')) {
         console.warn('[Main] Token authentication failed. Clearing token and redirecting to login.');
         localStorage.removeItem('chatToken');
-        localStorage.removeItem('chatUser'); // Xóa cả thông tin user
-        // Chỉ redirect nếu không phải đang ở trang login/register để tránh vòng lặp
+        localStorage.removeItem('chatUser');
         if (!window.location.pathname.startsWith('/auth')) {
-            // window.location.href = '/auth/login';
-            // Có thể hiển thị một modal yêu cầu đăng nhập thay vì redirect ngay
             alert("Phiên đăng nhập đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại.");
         }
     }
 });
 
-
 socket.on('disconnect', (reason) => {
-    console.log('Đã ngắt kết nối khỏi server Socket.IO:', reason);
+    // Log này đã có dạng tiếng Việt ở dưới, có thể bỏ dòng này nếu muốn thống nhất
+    // console.log('Đã ngắt kết nối khỏi server Socket.IO:', reason);
+    console.log(`[Main] Disconnected from Socket.IO server. Reason: ${reason}`);
 });
 
-// --- Phần test chat cơ bản (sẽ được chuyển vào các file JS chuyên biệt sau) ---
+
+// --- Phần test chat cơ bản (LOGIC NÀY CẦN XEM XÉT KỸ NẾU MAIN.JS CHẠY TRÊN TRANG ROOM_DETAIL) ---
+// Nếu các ID ('joinRoomBtn', 'roomNameInput', 'messageInput', 'sendMessageBtn', 'messagesDiv')
+// cũng tồn tại trên trang room_detail.ejs và được chatRoom.js quản lý,
+// thì các dòng khai báo const ở đây sẽ gây lỗi "already declared".
+// Để an toàn, nếu main.js được tải trên mọi trang, logic DOM này nên được gói trong điều kiện
+// kiểm tra xem các element này có thực sự thuộc về ngữ cảnh của main.js hay không.
+
+/* // Bắt đầu comment out các phần có thể gây xung đột hoặc không cần thiết trên trang room_detail
 const joinRoomBtn = document.getElementById('joinRoomBtn');
 const roomNameInput = document.getElementById('roomNameInput');
-const messageInput = document.getElementById('messageInput');
-const sendMessageBtn = document.getElementById('sendMessageBtn');
-const messagesDiv = document.getElementById('messages');
+// const messageInput = document.getElementById('messageInput'); // Gây xung đột với chatRoom.js
+// const sendMessageBtn = document.getElementById('sendMessageBtn'); // Gây xung đột với chatRoom.js
+const messagesDiv = document.getElementById('messages'); // Nếu ID này cũng dùng ở room_detail thì sẽ xung đột
 
-let currentRoomId = null;
+// let currentRoomId = null; // ĐÃ GÂY XUNG ĐỘT với script inline của room_detail.ejs - BẮT BUỘC XÓA/COMMENT
 
-if (joinRoomBtn) {
+if (joinRoomBtn && roomNameInput) { // Thêm kiểm tra sự tồn tại của element
     joinRoomBtn.addEventListener('click', () => {
         const roomIdToJoin = roomNameInput.value.trim();
         if (roomIdToJoin) {
-            console.log(`Attempting to join room: ${roomIdToJoin}`);
-            socket.emit('joinRoom', { roomId: roomIdToJoin }); // roomId nên là ID, không phải tên
-                                                            // Tạm thời dùng tên để test
+            console.log(`[Main.js Test Chat] Attempting to join room: ${roomIdToJoin}`);
+            socket.emit('joinRoom', { roomId: roomIdToJoin });
         }
     });
 }
 
-if (sendMessageBtn) {
-    sendMessageBtn.addEventListener('click', () => {
-        const messageText = messageInput.value.trim();
-        if (messageText && currentRoomId) {
-            socket.emit('sendMessage', { roomId: currentRoomId, text: messageText });
-            messageInput.value = '';
-        } else if (!currentRoomId) {
-            console.warn("Chưa tham gia phòng nào để gửi tin nhắn.");
-            alert("Bạn cần tham gia một phòng trước khi gửi tin nhắn.");
-        }
+// if (sendMessageBtn && messageInput) { // messageInput đã bị comment
+if (document.getElementById('sendMessageBtn') && document.getElementById('messageInput')) { // Kiểm tra lại, có thể ID khác
+    const mainJsSendMessageBtn = document.getElementById('sendMessageBtn'); // Tạo biến local nếu cần
+    const mainJsMessageInput = document.getElementById('messageInput');
+
+    mainJsSendMessageBtn.addEventListener('click', () => {
+        const messageText = mainJsMessageInput.value.trim();
+        // Giả sử currentRoomId của main.js được quản lý riêng (hiện tại đã comment)
+        // if (messageText && mainJsCurrentRoomId) { // Cần biến currentRoomId riêng cho phần test này
+        //     socket.emit('sendMessage', { roomId: mainJsCurrentRoomId, text: messageText });
+        //     mainJsMessageInput.value = '';
+        // } else if (!mainJsCurrentRoomId) {
+        //     console.warn("[Main.js Test Chat] Chưa tham gia phòng nào để gửi tin nhắn.");
+        // }
+        console.log("[Main.js Test Chat] Send button clicked. Logic cần currentRoomId riêng.");
     });
 }
+*/ // Kết thúc comment out khối test
 
-// Lắng nghe sự kiện join thành công
+// Các trình xử lý sự kiện socket.on ở đây có thể là global hoặc dành cho phần test.
+// Nếu chúng dành riêng cho trang phòng chat, chúng nên được đặt trong chatRoom.js.
+// Nếu main.js được tải trên trang phòng chat, các handler này có thể chạy song song với handler trong chatRoom.js.
+
+/* // Comment out các handler này trong main.js nếu chúng được xử lý tốt hơn bởi chatRoom.js
 socket.on('joinSuccess', (data) => {
-    console.log(`Successfully joined room: ${data.roomName} (ID: ${data.roomId})`);
-    messagesDiv.innerHTML = `<h3>Chào mừng đến với phòng ${data.roomName}</h3>`; // Xóa tin nhắn cũ
-    currentRoomId = data.roomId; // Lưu lại ID phòng hiện tại
-    document.getElementById('chatArea').style.display = 'block'; // Hiển thị khu vực chat
-    if(roomNameInput) roomNameInput.value = data.roomName; // Cập nhật tên phòng trên input
+    // Logic này có vẻ dành cho một giao diện test cụ thể, không phải phòng chat chính
+    console.log(`[Main.js] Received 'joinSuccess' for room: ${data.roomName}. This might conflict if on chat_room page.`);
+    // Ví dụ: if (messagesDiv && roomNameInput && document.getElementById('chatArea')) { ... }
 });
 
-
-// Lắng nghe tin nhắn mới
 socket.on('newMessage', (message) => {
-    console.log('New message received:', message);
-    const messageElement = document.createElement('div');
-    const userDisplay = message.user ? message.user.username : 'Unknown User';
-    const avatar = message.user && message.user.avatar ? `<img src="<span class="math-inline">\{message\.user\.avatar\}" alt\="</span>{userDisplay}" width="30" height="30" style="border-radius: 50%; margin-right: 5px;">` : '';
-    messageElement.innerHTML = `<span class="math-inline">\{avatar\}<strong\></span>{userDisplay}:</strong> <span class="math-inline">\{message\.text\} <small\>\(</span>{new Date(message.timestamp).toLocaleTimeString()})</small>`;
-    messagesDiv.appendChild(messageElement);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight; // Cuộn xuống tin nhắn mới nhất
+    console.log('[Main.js] Received new message:', message, " - This might conflict if on chat_room page.");
 });
 
-// Lắng nghe thông báo user tham gia
 socket.on('userJoined', (data) => {
-    console.log('User joined:', data);
-    const noticeElement = document.createElement('div');
-    noticeElement.style.fontStyle = 'italic';
-    noticeElement.style.color = 'green';
-    noticeElement.textContent = data.message;
-    messagesDiv.appendChild(noticeElement);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    console.log('[Main.js] User joined:', data, " - This might conflict if on chat_room page.");
 });
 
-// Lắng nghe thông báo user rời phòng
 socket.on('userLeft', (data) => {
-    console.log('User left:', data);
-    const noticeElement = document.createElement('div');
-    noticeElement.style.fontStyle = 'italic';
-    noticeElement.style.color = 'orange';
-    noticeElement.textContent = data.message;
-    messagesDiv.appendChild(noticeElement);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    console.log('[Main.js] User left:', data, " - This might conflict if on chat_room page.");
 });
 
-// Lắng nghe tin nhắn cũ
 socket.on('loadMessages', (messages) => {
-    console.log('Loading old messages:', messages);
-    messages.forEach(message => {
-        const messageElement = document.createElement('div');
-        const userDisplay = message.User ? message.User.username : (message.sender ? message.sender.username : 'Unknown User');
-        const avatarPath = message.User ? message.User.avatar : (message.sender ? message.sender.avatar : null);
-        const avatar = avatarPath ? `<img src="<span class="math-inline">\{avatarPath\.startsWith\('http'\) ? avatarPath \: '/' \+ avatarPath\}" alt\="</span>{userDisplay}" width="30" height="30" style="border-radius: 50%; margin-right: 5px;">` : '';
-        messageElement.innerHTML = `<span class="math-inline">\{avatar\}<strong\></span>{userDisplay}:</strong> <span class="math-inline">\{message\.text\} <small\>\(</span>{new Date(message.createdAt).toLocaleTimeString()})</small>`;
-        messagesDiv.appendChild(messageElement);
-    });
-    messagesDiv.scrollTop = messagesDiv.scrollHeight; // Cuộn xuống dưới cùng
+    console.log('[Main.js] Loading old messages:', messages, " - This might conflict if on chat_room page.");
 });
+*/ // Kết thúc comment out các socket handlers
 
-socket.on('error', (errorData) => {
-    console.error('Server error:', errorData.message);
-    alert(`Lỗi từ server: ${errorData.message}`);
+// Các handler này có vẻ là chung, có thể giữ lại
+socket.on('error', (errorData) => { // Lỗi từ server gửi qua socket event 'error'
+    console.error('[Main] Server error via socket:', errorData.message);
+    // alert(`Lỗi từ server: ${errorData.message}`); // Có thể bị alert 2 lần nếu chatRoom.js cũng có
 });
 
 socket.on('spamWarning', (data) => {
-    console.warn('Spam warning:', data.message);
-    alert(data.message);
+    console.warn('[Main] Spam warning via socket:', data.message);
+    // alert(data.message); // Có thể bị alert 2 lần nếu chatRoom.js cũng có
 });
-
-
-
-
-
