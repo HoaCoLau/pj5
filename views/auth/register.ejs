@@ -1,49 +1,20 @@
-<div class="row mt-5">
-    <div class="col-md-6 m-auto">
-        <div class="card card-body">
-            <h1 class="text-center mb-3"><i class="fas fa-user-plus"></i> Đăng ký</h1>
-
-            <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
-                <div class="alert alert-danger" role="alert">
-                    <ul class="mb-0">
-                        <% errors.forEach(function(error) { %>
-                            <li><%= error.message %></li>
-                        <% }); %>
-                    </ul>
-                </div>
-            <% } %>
-            <% if (typeof success_msg !== 'undefined' && success_msg) { %> <div class="alert alert-success" role="alert">
-                    <%= success_msg %>
-                </div>
-            <% } %>
-
-            <form id="registerForm" action="/auth/register" method="POST">
-                <div class="form-group mb-3">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" class="form-control"
-                        placeholder="Nhập Username"
-                        value="<%= typeof formData !== 'undefined' && formData.username ? formData.username : '' %>" required>
-                </div>
-                <div class="form-group mb-3">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" class="form-control" placeholder="Nhập Email"
-                        value="<%= typeof formData !== 'undefined' && formData.email ? formData.email : '' %>" required>
-                </div>
-                <div class="form-group mb-3">
-                    <label for="password">Mật khẩu</label>
-                    <input type="password" id="password" name="password" class="form-control"
-                        placeholder="Nhập Mật khẩu" required>
-                </div>
-                <div class="form-group mb-3">
-                    <label for="confirmPassword">Xác nhận Mật khẩu</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
-                        placeholder="Xác nhận Mật khẩu" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block w-100">Đăng ký</button>
-            </form>
-            <p class="lead mt-4">
-                Đã có tài khoản? <a href="/auth/login">Đăng nhập</a>
-            </p>
-        </div>
+<h2>Đăng Ký Tài Khoản</h2>
+<% if (typeof error !== 'undefined' && error) { %>
+    <p class="error-message"><%= error %></p>
+<% } %>
+<form action="/auth/register" method="POST">
+    <div>
+        <label for="username">Tên người dùng:</label>
+        <input type="text" id="username" name="username" required>
     </div>
-</div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+    </div>
+    <div>
+        <label for="password">Mật khẩu:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <button type="submit">Đăng Ký</button>
+</form>
+<p>Đã có tài khoản? <a href="/auth/login">Đăng nhập ngay</a></p>

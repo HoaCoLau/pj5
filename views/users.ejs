@@ -1,0 +1,24 @@
+<h1>Tìm Bạn Bè</h1>
+<p>Dưới đây là danh sách tất cả người dùng trên hệ thống.</p>
+
+<div class="user-list-container">
+    <% if (users.length > 0) { %>
+        <ul class="user-list">
+            <% users.forEach(otherUser => { %>
+                <li class="user-item">
+                    <div class="user-info">
+                        <img src="<%= otherUser.avatar_url || 'https://via.placeholder.com/50' %>" alt="Avatar" width="100px" class="avatar-small">
+                        <span><%= otherUser.username %></span>
+                    </div>
+                    <div class="user-actions">
+                        <form action="/users/friends/request/<%= otherUser.id %>" method="POST">
+                            <button type="submit" class="btn btn-primary">Thêm bạn</button>
+                        </form>
+                    </div>
+                </li>
+            <% }) %>
+        </ul>
+    <% } else { %>
+        <p>Không tìm thấy người dùng nào khác.</p>
+    <% } %>
+</div>

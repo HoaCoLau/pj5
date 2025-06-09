@@ -1,0 +1,27 @@
+<h1>Chỉnh sửa Hồ sơ</h1>
+<div class="profile-container">
+    <div class="profile-avatar">
+        <img src="<%= user.avatar_url || 'https://via.placeholder.com/150' %>" alt="Avatar" width="100px" id="avatar-preview">
+    </div>
+    <div class="profile-form">
+        <form action="/users/profile" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="email">Email (không thể thay đổi)</label>
+                <input type="email" id="email" name="email" value="<%= user.email %>" disabled>
+            </div>
+            <div class="form-group">
+                <label for="username">Tên hiển thị</label>
+                <input type="text" id="username" name="username" value="<%= user.username %>" required>
+            </div>
+             <div class="form-group">
+                <label for="avatar">Thay đổi ảnh đại diện</label>
+                <input type="file" id="avatar" name="avatar" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label for="bio">Giới thiệu bản thân</label>
+                <textarea id="bio" name="bio" rows="4"><%= user.bio || '' %></textarea>
+            </div>
+            <button type="submit" class="btn">Cập nhật thông tin</button>
+        </form>
+    </div>
+</div>

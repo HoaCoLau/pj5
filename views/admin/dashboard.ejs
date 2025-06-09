@@ -1,0 +1,46 @@
+<h1>Dashboard Quản trị</h1>
+
+<div class="admin-stats">
+    <div class="stat-card">
+        <h3>Tổng số người dùng</h3>
+        <p><%= totalUsers %></p>
+    </div>
+    <div class="stat-card">
+        <h3>Tổng số phòng chat</h3>
+        <p><%= totalChats %></p>
+    </div>
+    <div class="stat-card">
+        <h3>Tổng số tin nhắn</h3>
+        <p><%= totalMessages %></p>
+    </div>
+</div>
+
+<hr>
+
+<div class="admin-logs">
+    <h2>Nhật ký hoạt động gần đây</h2>
+    <table class="log-table">
+        <thead>
+            <tr>
+                <th>Thời gian</th>
+                <th>Người dùng</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (recentLogs.length > 0) { %>
+                <% recentLogs.forEach(log => { %>
+                    <tr>
+                        <td><%= new Date(log.created_at).toLocaleString('vi-VN') %></td>
+                        <td><%= log.User ? log.User.username : 'N/A' %></td>
+                        <td><%= log.action %></td>
+                    </tr>
+                <% }) %>
+            <% } else { %>
+                <tr>
+                    <td colspan="3">Không có hoạt động nào.</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>

@@ -1,8 +1,0 @@
-<div class="container mt-5 text-center">
-    <h1 class="display-4"><i class="fas fa-exclamation-triangle text-danger"></i> <%= title || 'Đã có lỗi xảy ra' %></h1>
-    <p class="lead"><%= message || 'Rất tiếc, đã có lỗi không mong muốn. Vui lòng thử lại sau.' %></p>
-    <a href="/" class="btn btn-primary">Về trang chủ</a>
-    <% if (typeof previousPage !== 'undefined' && previousPage) { %>
-         <a href="<%= previousPage %>" class="btn btn-secondary">Quay lại</a>
-    <% } %>
-</div>
