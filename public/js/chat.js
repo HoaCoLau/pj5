@@ -12,7 +12,24 @@ document.addEventListener('DOMContentLoaded', () => {
     emojiBtn.addEventListener('click', () => {
         emojiPicker.classList.toggle('visible');
     });
+     const inviteModal = document.getElementById('invite-modal');
+    const openInviteBtn = document.getElementById('open-invite-modal-btn');
+    const closeBtn = document.querySelector('.modal .close-btn'); // Lấy nút close bên trong modal
+    if (openInviteBtn && inviteModal && closeBtn) {
+        openInviteBtn.addEventListener('click', () => {
+            inviteModal.style.display = 'block';
+        });
 
+        closeBtn.addEventListener('click', () => {
+            inviteModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target == inviteModal) {
+                inviteModal.style.display = 'none';
+            }
+        });
+    }
     // Khi một emoji được chọn
     emojiPicker.addEventListener('emoji-click', event => {
         messageInput.value += event.detail.unicode; // Chèn emoji vào ô input
@@ -131,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             item.innerHTML = `
             <div class="message-avatar">
-                <img src="${sender?.avatar_url || 'https://via.placeholder.com/40'}" alt="avt">
+                <img src="${sender?.avatar_url || 'https://via.placeholder.com/40'}" width="25px" alt="avt">
             </div>
             <div class="message-body">
                 <div class="message-sender">

@@ -1,49 +1,50 @@
 <h1>Quản lý Bạn bè</h1>
 
-<div class="friends-container">
-    <div class="pending-requests">
-        <h2>Lời mời đang chờ (<%= pendingRequests.length %>)</h2>
-        <% if (pendingRequests.length > 0) { %>
-            <ul class="user-list">
-                <% pendingRequests.forEach(request => { %>
-                    <li class="user-item">
-                        <div class="user-info">
-                            <img src="<%= request.Requester.avatar_url || 'https://via.placeholder.com/50' %>" alt="Avatar" width="100px" class="avatar-small">
-                            <span><%= request.Requester.username %></span>
-                        </div>
-                        <div class="user-actions">
-                            <form action="/users/friends/accept/<%= request.id %>" method="POST">
-                                <button type="submit" class="btn btn-success">Chấp nhận</button>
-                            </form>
-                            </div>
-                    </li>
-                <% }) %>
-            </ul>
-        <% } else { %>
-            <p>Bạn không có lời mời kết bạn nào.</p>
-        <% } %>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0">Lời mời đang chờ (<%= pendingRequests.length %>)</h5>
+            </div>
+            <div class="card-body">
+                <% if (pendingRequests.length > 0) { %>
+                    <ul class="list-group">
+                        <% pendingRequests.forEach(request => { %>
+                            <li class="list-group-item d-flex align-items-center">
+                                <img src="<%= request.Requester.avatar_url || 'https://via.placeholder.com/50' %>" class="rounded-circle me-2" width="40" height="40">
+                                <span class="me-auto"><%= request.Requester.username %></span>
+                                <form action="/users/friends/accept/<%= request.id %>" method="POST">
+                                    <button type="submit" class="btn btn-success btn-sm">Chấp nhận</button>
+                                </form>
+                            </li>
+                        <% }) %>
+                    </ul>
+                <% } else { %>
+                    <p>Bạn không có lời mời kết bạn nào.</p>
+                <% } %>
+            </div>
+        </div>
     </div>
-
-    <hr>
-
-    <div class="friends-list">
-        <h2>Bạn bè (<%= friends.length %>)</h2>
-        <% if (friends.length > 0) { %>
-            <ul class="user-list">
-                <% friends.forEach(friend => { %>
-                    <li class="user-item">
-                        <div class="user-info">
-                            <img src="<%= friend.avatar_url || 'https://via.placeholder.com/50' %>" alt="Avatar" width="100px" class="avatar-small">
-                            <span><%= friend.username %></span>
-                        </div>
-                        <div class="user-actions">
-                             <a href="#" class="btn btn-secondary">Nhắn tin</a>
-                        </div>
-                    </li>
-                <% }) %>
-            </ul>
-        <% } else { %>
-            <p>Bạn chưa có người bạn nào. Hãy <a href="/users">tìm bạn</a> ngay!</p>
-        <% } %>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Bạn bè (<%= friends.length %>)</h5>
+            </div>
+            <div class="card-body">
+                <% if (friends.length > 0) { %>
+                    <ul class="list-group">
+                        <% friends.forEach(friend => { %>
+                            <li class="list-group-item d-flex align-items-center">
+                                <img src="<%= friend.avatar_url || 'https://via.placeholder.com/50' %>" class="rounded-circle me-2" width="40" height="40">
+                                <span class="me-auto"><%= friend.username %></span>
+                                <a href="#" class="btn btn-outline-secondary btn-sm">Nhắn tin</a>
+                            </li>
+                        <% }) %>
+                    </ul>
+                <% } else { %>
+                    <p>Bạn chưa có người bạn nào. Hãy <a href="/users">tìm bạn</a> ngay!</p>
+                <% } %>
+            </div>
+        </div>
     </div>
 </div>

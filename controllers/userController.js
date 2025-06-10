@@ -43,16 +43,31 @@ exports.listUsers = async (req, res) => {
         const currentUser = req.user;
 
         // Lấy tất cả user TRỪ người dùng hiện tại
-        const users = await db.User.findAll({
+        let users = await db.User.findAll({
             where: {
-                id: { [Op.ne]: currentUser.id } // Op.ne = Not Equal
+                id: { [Op.ne]: currentUser.id }
             }
         });
 
-        // Đây là một bước nâng cao: kiểm tra trạng thái bạn bè với từng người
-        // để biết nên hiển thị nút "Thêm bạn", "Đã gửi" hay "Bạn bè"
-        // Tạm thời chúng ta sẽ làm đơn giản trước
-        
+        // Lấy tất cả mối quan hệ bạn bè hoặc lời mời liên quan đến user hiện tại
+        const friendships = await db.Friendship.findAll({
+            where: {
+                [Op.or]: [
+                    { requester_id: currentUser.id },
+                    { addressee_id: currentUser.id }
+                ]
+            }
+        });
+
+        // Lấy danh sách ID đã là bạn hoặc đã gửi/nhận lời mời
+        const relatedIds = new Set();
+        friendships.forEach(f => {
+            relatedIds.add(f.requester_id === currentUser.id ? f.addressee_id : f.requester_id);
+        });
+
+        // Lọc ra những user chưa có bất kỳ mối quan hệ nào với mình
+        users = users.filter(u => !relatedIds.has(u.id));
+
         res.render('users', {
             title: 'Tìm bạn bè',
             users: users

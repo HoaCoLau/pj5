@@ -1,37 +1,71 @@
-<div class="chat-container">
-    <div class="chat-header">
-        <h2>
-            <%= chat.name %>
-        </h2>
-        <form action="/chats/<%= chat.id %>/leave" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn rời khỏi phòng chat này không?');">
-            <button type="submit" class="btn-leave">Rời phòng</button>
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fa-solid fa-comments"></i> <%= chat.name %></h5>
+        <div>
+            <button id="open-invite-modal-btn" class="btn btn-outline-primary btn-sm me-2">Mời bạn bè</button>
+            <form action="/chats/<%= chat.id %>/leave" method="POST" class="d-inline"
+                onsubmit="return confirm('Bạn có chắc chắn muốn rời khỏi phòng chat này không?');">
+                <button type="submit" class="btn btn-outline-danger btn-sm">Rời phòng</button>
+            </form>
+            <% if (user && (user.id === chat.created_by || user.role === 'admin')) { %>
+            <form action="/chats/<%= chat.id %>/delete" method="POST" class="d-inline ms-2"
+                onsubmit="return confirm('Bạn có chắc chắn muốn xóa phòng chat này không?');">
+                <button type="submit" class="btn btn-danger btn-sm">Xóa phòng</button>
+            </form>
+            <% } %>
+        </div>
+    </div>
+    <div class="card-body p-0" style="height: 400px; overflow-y: auto;">
+        <div id="message-list" class="list-group list-group-flush"></div>
+    </div>
+    <div class="card-footer bg-white">
+        <form id="chat-form" class="d-flex gap-2 align-items-center">
+            <input type="file" id="image-input" name="chatImage" accept="image/*" style="display: none;">
+            <button type="button" id="image-upload-btn" class="btn btn-light" title="Gửi ảnh">
+                <i class="fa-solid fa-image"></i>
+            </button>
+            <button type="button" id="emoji-btn" class="btn btn-light" title="Chọn emoji">😃</button>
+            <input type="text" id="message-input" class="form-control" placeholder="Nhập tin nhắn..." autocomplete="off">
+            <button type="submit" class="btn btn-primary" title="Gửi">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
         </form>
+        <div class="emoji-picker-container position-relative">
+            <emoji-picker class="light"></emoji-picker>
+        </div>
     </div>
-    <div class="invite-friends-section">
-        <h4>Mời thêm bạn bè</h4>
-        <form action="/chats/<%= chat.id %>/invite" method="POST">
-            <% friendsToInvite.forEach(friend=> { %>
-                <label><input type="checkbox" name="friendsToInvite" value="<%= friend.id %>">
-                    <%= friend.username %>
-                </label>
-                <% }) %>
-                    <button type="submit">Mời</button>
-        </form>
-    </div>
-    <div id="message-list" class="message-list">
-    </div>
+</div>
 
-    <div class="emoji-picker-container">
-        <emoji-picker class="light"></emoji-picker>
+<!-- Modal mời bạn bè -->
+<div id="invite-modal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Mời bạn bè vào phòng</h5>
+                <button type="button" class="btn-close close-btn" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/chats/<%= chat.id %>/invite" method="POST">
+                    <div class="mb-3 friends-invite-list">
+                        <% if (friendsToInvite.length> 0) { %>
+                            <% friendsToInvite.forEach(friend=> { %>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="friendsToInvite" value="<%= friend.id %>" id="friend-<%= friend.id %>">
+                                    <label class="form-check-label" for="friend-<%= friend.id %>">
+                                        <img src="<%= friend.avatar_url || 'https://via.placeholder.com/30' %>" class="avatar-tiny me-2">
+                                        <%= friend.username %>
+                                    </label>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <p class="text-muted">Tất cả bạn bè của bạn đã ở trong phòng này.</p>
+                        <% } %>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Xác nhận mời</button>
+                </form>
+            </div>
+        </div>
     </div>
-
-    <form id="chat-form" class="chat-form">
-        <input type="file" id="image-input" name="chatImage" accept="image/*" style="display: none;">
-        <button type="button" id="image-upload-btn" title="Gửi ảnh"><i class="fa-solid fa-image"></i></button>
-        <button type="button" id="emoji-btn" title="Chọn emoji">😃</button>
-        <input type="text" id="message-input" ...>
-        <button type="submit" title="Gửi"><i class="fa-solid fa-paper-plane"></i></button>
-    </form>
 </div>
 
 <script>

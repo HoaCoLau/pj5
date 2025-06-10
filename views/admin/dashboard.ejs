@@ -1,46 +1,59 @@
 <h1>Dashboard Quản trị</h1>
 
-<div class="admin-stats">
-    <div class="stat-card">
-        <h3>Tổng số người dùng</h3>
-        <p><%= totalUsers %></p>
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center border-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Tổng số người dùng</h5>
+                <p class="display-6"><%= totalUsers %></p>
+            </div>
+        </div>
     </div>
-    <div class="stat-card">
-        <h3>Tổng số phòng chat</h3>
-        <p><%= totalChats %></p>
+    <div class="col-md-4">
+        <div class="card text-center border-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Tổng số phòng chat</h5>
+                <p class="display-6"><%= totalChats %></p>
+            </div>
+        </div>
     </div>
-    <div class="stat-card">
-        <h3>Tổng số tin nhắn</h3>
-        <p><%= totalMessages %></p>
+    <div class="col-md-4">
+        <div class="card text-center border-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Tổng số tin nhắn</h5>
+                <p class="display-6"><%= totalMessages %></p>
+            </div>
+        </div>
     </div>
 </div>
-
-<hr>
-
-<div class="admin-logs">
-    <h2>Nhật ký hoạt động gần đây</h2>
-    <table class="log-table">
-        <thead>
-            <tr>
-                <th>Thời gian</th>
-                <th>Người dùng</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% if (recentLogs.length > 0) { %>
-                <% recentLogs.forEach(log => { %>
-                    <tr>
-                        <td><%= new Date(log.created_at).toLocaleString('vi-VN') %></td>
-                        <td><%= log.User ? log.User.username : 'N/A' %></td>
-                        <td><%= log.action %></td>
-                    </tr>
-                <% }) %>
-            <% } else { %>
+<div class="card">
+    <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0">Nhật ký hoạt động gần đây</h5>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-striped mb-0">
+            <thead>
                 <tr>
-                    <td colspan="3">Không có hoạt động nào.</td>
+                    <th>Thời gian</th>
+                    <th>Người dùng</th>
+                    <th>Hành động</th>
                 </tr>
-            <% } %>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <% if (recentLogs.length > 0) { %>
+                    <% recentLogs.forEach(log => { %>
+                        <tr>
+                            <td><%= new Date(log.created_at).toLocaleString('vi-VN') %></td>
+                            <td><%= log.User ? log.User.username : 'N/A' %></td>
+                            <td><%= log.action %></td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="3">Không có hoạt động nào.</td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
 </div>

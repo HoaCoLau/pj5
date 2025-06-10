@@ -1,16 +1,24 @@
-<h2>Đăng Nhập</h2>
-<% if (typeof error !== 'undefined' && error) { %>
-    <p class="error-message"><%= error %></p>
-<% } %>
-<form action="/auth/login" method="POST">
-    <div>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title mb-4 text-center">Đăng Nhập</h2>
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <div class="alert alert-danger"><%= error %></div>
+                <% } %>
+                <form action="/auth/login" method="POST">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email:</label>
+                        <input type="email" id="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Mật khẩu:</label>
+                        <input type="password" id="password" name="password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Đăng Nhập</button>
+                </form>
+                <p class="mt-3 text-center">Chưa có tài khoản? <a href="/auth/register">Đăng ký ngay</a></p>
+            </div>
+        </div>
     </div>
-    <div>
-        <label for="password">Mật khẩu:</label>
-        <input type="password" id="password" name="password" required>
-    </div>
-    <button type="submit">Đăng Nhập</button>
-</form>
-<p>Chưa có tài khoản? <a href="/auth/register">Đăng ký ngay</a></p>
+</div>

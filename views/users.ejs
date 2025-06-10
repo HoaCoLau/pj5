@@ -1,24 +1,24 @@
-<h1>Tìm Bạn Bè</h1>
-<p>Dưới đây là danh sách tất cả người dùng trên hệ thống.</p>
-
-<div class="user-list-container">
-    <% if (users.length > 0) { %>
-        <ul class="user-list">
-            <% users.forEach(otherUser => { %>
-                <li class="user-item">
-                    <div class="user-info">
-                        <img src="<%= otherUser.avatar_url || 'https://via.placeholder.com/50' %>" alt="Avatar" width="100px" class="avatar-small">
-                        <span><%= otherUser.username %></span>
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Tìm Bạn Bè</h5>
+    </div>
+    <div class="card-body">
+        <% if (users.length > 0) { %>
+            <div class="row">
+                <% users.forEach(otherUser => { %>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="d-flex align-items-center border rounded p-2">
+                            <img src="<%= otherUser.avatar_url || 'https://via.placeholder.com/50' %>" alt="Avatar" class="rounded-circle me-2" width="50" height="50">
+                            <span class="me-auto"><%= otherUser.username %></span>
+                            <form action="/users/friends/request/<%= otherUser.id %>" method="POST" class="ms-2">
+                                <button type="submit" class="btn btn-outline-primary btn-sm">Thêm bạn</button>
+                            </form>
+                        </div>
                     </div>
-                    <div class="user-actions">
-                        <form action="/users/friends/request/<%= otherUser.id %>" method="POST">
-                            <button type="submit" class="btn btn-primary">Thêm bạn</button>
-                        </form>
-                    </div>
-                </li>
-            <% }) %>
-        </ul>
-    <% } else { %>
-        <p>Không tìm thấy người dùng nào khác.</p>
-    <% } %>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <p>Không tìm thấy người dùng nào khác.</p>
+        <% } %>
+    </div>
 </div>

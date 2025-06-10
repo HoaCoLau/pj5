@@ -1,27 +1,34 @@
 <h1>Chỉnh sửa Hồ sơ</h1>
-<div class="profile-container">
-    <div class="profile-avatar">
-        <img src="<%= user.avatar_url || 'https://via.placeholder.com/150' %>" alt="Avatar" width="100px" id="avatar-preview">
-    </div>
-    <div class="profile-form">
-        <form action="/users/profile" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="email">Email (không thể thay đổi)</label>
-                <input type="email" id="email" name="email" value="<%= user.email %>" disabled>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Chỉnh sửa Hồ sơ</h5>
             </div>
-            <div class="form-group">
-                <label for="username">Tên hiển thị</label>
-                <input type="text" id="username" name="username" value="<%= user.username %>" required>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <img src="<%= user.avatar_url || 'https://via.placeholder.com/100' %>" alt="Avatar" class="rounded-circle" width="100" id="avatar-preview">
+                </div>
+                <form action="/users/profile" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email (không thể thay đổi)</label>
+                        <input type="email" id="email" name="email" class="form-control" value="<%= user.email %>" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Tên hiển thị</label>
+                        <input type="text" id="username" name="username" class="form-control" value="<%= user.username %>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="avatar" class="form-label">Thay đổi ảnh đại diện</label>
+                        <input type="file" id="avatar" name="avatar" class="form-control" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <label for="bio" class="form-label">Giới thiệu bản thân</label>
+                        <textarea id="bio" name="bio" class="form-control" rows="4"><%= user.bio || '' %></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Cập nhật thông tin</button>
+                </form>
             </div>
-             <div class="form-group">
-                <label for="avatar">Thay đổi ảnh đại diện</label>
-                <input type="file" id="avatar" name="avatar" accept="image/*">
-            </div>
-            <div class="form-group">
-                <label for="bio">Giới thiệu bản thân</label>
-                <textarea id="bio" name="bio" rows="4"><%= user.bio || '' %></textarea>
-            </div>
-            <button type="submit" class="btn">Cập nhật thông tin</button>
-        </form>
+        </div>
     </div>
 </div>

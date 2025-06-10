@@ -15,5 +15,6 @@ router.post('/:chatId/image', uploadChatImage.single('chatImage'), chatControlle
 router.post('/', chatController.createChatRoom);
 router.post('/:chatId/invite', chatController.inviteFriendsToChat);
 router.post('/:chatId/leave', chatController.leaveChatRoom);
+router.post('/:chatId/delete', chatController.deleteChatRoom);
 
 module.exports = router;

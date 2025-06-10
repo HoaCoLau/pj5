@@ -1,35 +1,47 @@
 <h1>Chat App Realtime</h1>
-<div class="room-section">
-    <h2>Tạo phòng chat mới</h2>
-    <form action="/chats" method="POST" class="create-room-form">
-        <input type="text" name="name" placeholder="Tên phòng..." required>
-
-        <h4>Mời bạn bè:</h4>
-        <div class="friends-invite-list">
-            <% friends.forEach(friend=> { %>
-                <label>
-                    <input type="checkbox" name="invited_friends" value="<%= friend.id %>">
-                    <%= friend.username %>
-                </label>
-                <% }) %>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Tạo phòng chat mới</h5>
+            </div>
+            <div class="card-body">
+                <form action="/chats" method="POST">
+                    <div class="mb-3">
+                        <input type="text" name="name" class="form-control" placeholder="Tên phòng..." required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mời bạn bè:</label>
+                        <div class="friends-invite-list border rounded p-2" style="max-height:120px;overflow-y:auto;">
+                            <% friends.forEach(friend=> { %>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="invited_friends" value="<%= friend.id %>">
+                                    <label class="form-check-label"><%= friend.username %></label>
+                                </div>
+                            <% }) %>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Tạo phòng</button>
+                </form>
+            </div>
         </div>
-        <button type="submit">Tạo phòng</button>
-    </form>
-
-    <hr>
-
-    <h2>Tham gia phòng có sẵn</h2>
-    <ul class="room-list">
-        <% if (chats.length> 0) { %>
-            <% chats.forEach(chat=> { %>
-                <li>
-                    <a href="/chats/<%= chat.id %>">
-                        <%= chat.name %>
-                    </a>
-                </li>
-                <% }) %>
-                    <% } else { %>
-                        <p>Chưa có phòng chat nào. Hãy tạo một phòng mới!</p>
-                        <% } %>
-    </ul>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Phòng chat của bạn</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <% if (chats.length> 0) { %>
+                    <% chats.forEach(chat=> { %>
+                        <li class="list-group-item">
+                            <a href="/chats/<%= chat.id %>"><%= chat.name %></a>
+                        </li>
+                    <% }) %>
+                <% } else { %>
+                    <li class="list-group-item text-muted">Chưa có phòng chat nào. Hãy tạo một phòng mới!</li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
 </div>

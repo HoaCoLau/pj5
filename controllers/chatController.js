@@ -205,3 +205,31 @@ exports.leaveChatRoom = async (req, res) => {
         res.status(500).send("Đã có lỗi xảy ra.");
     }
 };
+
+exports.deleteChatRoom = async (req, res) => {
+    try {
+        const { chatId } = req.params;
+        const userId = req.user.id;
+        const userRole = req.user.role;
+
+        // Lấy phòng chat
+        const chat = await db.Chat.findByPk(chatId);
+
+        // Chỉ cho phép người tạo hoặc admin xóa
+        if (!chat || (chat.created_by !== userId && userRole !== 'admin')) {
+            return res.status(403).send('Bạn không có quyền xóa phòng này.');
+        }
+
+        // Xóa các bản ghi liên quan (ChatMember, Message, ...)
+        await db.ChatMember.destroy({ where: { chat_id: chatId } });
+        await db.Message.destroy({ where: { chat_id: chatId } });
+
+        // Xóa phòng chat
+        await chat.destroy();
+
+        res.redirect('/');
+    } catch (error) {
+        console.error('Lỗi xóa phòng chat:', error);
+        res.status(500).send('Lỗi server');
+    }
+};

@@ -1,17 +1,21 @@
 <header>
-    <nav>
-        <a href="/">Trang chủ</a>
-        <% if (typeof user !=='undefined' && user) { %>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+      <div class="container">
+        <a class="navbar-brand"  style="color: black;" href="/">ChatApp</a>
+        <div>
+          <% if (typeof user !=='undefined' && user) { %>
             <% if (user.role==='admin' ) { %>
-                <a href="/admin" style="color: #ffc107;">Trang Admin</a>
-                <% } %>
-                    <a href="/users">Tìm bạn</a>
-                    <a href="/users/friends">Bạn bè</a>
-                    <a href="/users/profile">Chào, <%= user.username %></a>
-                    <a href="/auth/logout">Đăng xuất</a>
-                    <% } else { %>
-                        <a href="/auth/login">Đăng nhập</a>
-                        <a href="/auth/register">Đăng ký</a>
-                        <% } %>
+              <a class="nav-link d-inline text-warning"  style="color: black;" href="/admin">Trang Admin</a>
+            <% } %>
+            <a class="nav-link d-inline" style="color: black;" href="/users">Tìm bạn</a>
+            <a class="nav-link d-inline" style="color: black;" href="/users/friends">Bạn bè</a>
+            <a class="nav-link d-inline" style="color: black;" href="/users/profile">Chào, <%= user.username %></a>
+            <a class="nav-link d-inline" style="color: black;" href="/auth/logout">Đăng xuất</a>
+          <% } else { %>
+            <a class="nav-link d-inline" style="color: black;"  href="/auth/login">Đăng nhập</a>
+            <a class="nav-link d-inline" style="color: black;" href="/auth/register">Đăng ký</a>
+          <% } %>
+        </div>
+      </div>
     </nav>
 </header>
